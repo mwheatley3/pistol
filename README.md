@@ -1,0 +1,2 @@
+# pistol
+RethinkDB project
