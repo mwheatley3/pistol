@@ -1,21 +1,24 @@
-import React, {Component} from 'react';
-import Channel from './Channel.jsx'
+import React, { Component } from 'react';
+import Channel from './Channel.jsx';
 
-export default class ChannelList extends Component{
-  propTypes = {
-    channels: React.PropTypes.Array.isRequired,
-    setChannel: React.PropTypes.func.isRequired
+export default class ChannelList extends Component {
+  static propTypes = {
+    channels: React.PropTypes.array.isRequired,
+    setChannel: React.PropTypes.func.isRequired,
+    activeChannel: React.PropTypes.object.isRequired,
   }
-  render(){
-    return(
-      <ul>
-        this.props.channels.map((key, channel) => {
-          <Channel
-            channel={channel}
-            setChannel={this.props.setChannel}
-            />
+
+  render() {
+    return (
+      <ul>{
+        this.props.channels.map( chan => {
+        return (<Channel
+            channel={ chan }
+            key={ chan.id }
+            { ...this.props }
+            />);
         })
-      </ul>
-    )
+      }</ul>
+    );
   }
 }

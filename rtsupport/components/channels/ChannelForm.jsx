@@ -1,24 +1,28 @@
-import React, {Channel} from 'react';
+import React, { Component } from 'react';
 
-export default class ChannelForm extends Component{
-  propTypes = {
-    addChannel: React.PropTypes.func.isRequired
+export default class ChannelForm extends Component {
+  static propTypes = {
+    addChannel: React.PropTypes.func.isRequired,
   }
-  onSubmit(e){
+  onSubmit(e) {
     e.preventDefault();
     const node = this.refs.channel;
     const channelName = node.value;
     this.props.addChannel(channelName);
     node.value = '';
   }
-  render(){
-    return(
-      <form onSubmit={this.onSubmit.bind(this)}>
-        <input
-          type='text'
-          ref='channel'
-        />
+  render() {
+    return (
+      <form onSubmit={ this.onSubmit.bind(this) }>
+        <div className="form-group">
+          <input
+            className="form-control"
+            placeholder="Add Channel"
+            type="text"
+            ref="channel"
+          />
+        </div>
       </form>
-    )
+    );
   }
 }
