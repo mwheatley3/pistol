@@ -15,7 +15,8 @@ export default class ChannelList extends Component {
         return (<Channel
             channel={ chan }
             key={ chan.id }
-            { ...this.props }
+            setChannel={ this.props.setChannel }
+            activeChannel={ this.props.activeChannel }
             />);
         })
       }</ul>

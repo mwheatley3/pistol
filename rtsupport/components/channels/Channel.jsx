@@ -20,7 +20,7 @@ export default class Channel extends Component {
     return (
       <li className={ active }>
         <a onClick={ this.onClick.bind(this) }>
-          {channel.name}
+          { channel.name }
         </a>
       </li>
     );
