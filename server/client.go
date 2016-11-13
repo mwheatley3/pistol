@@ -8,7 +8,7 @@ import (
 // FindHandler looks up the correct method based on the msg name
 type FindHandler func(string) (Handler, bool)
 
-// Message is the
+// Message is the structure of data that will be sent back to the browser
 type Message struct {
 	Name string      `json:"name"`
 	Data interface{} `json:"data"`
@@ -16,11 +16,12 @@ type Message struct {
 
 // Client lkj
 type Client struct {
-	send         chan Message
-	socket       *websocket.Conn
-	findHandler  FindHandler
-	session      *r.Session
-	stopChannels map[int]chan bool
+	send            chan Message
+	socket          *websocket.Conn
+	findHandler     FindHandler
+	session         *r.Session
+	stopChannels    map[int]chan bool
+	tableDefinition map[string]interface{}
 }
 
 // NewStopChannel kjh

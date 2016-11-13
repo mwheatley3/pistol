@@ -22,7 +22,7 @@ type Router struct {
 	session *r.Session
 }
 
-// NewRouter is in initializer for a router
+// NewRouter is the initializer for a router
 func NewRouter(session *r.Session) *Router {
 	return &Router{
 		rules:   make(map[string]Handler),
@@ -48,7 +48,6 @@ func (r *Router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 		fmt.Fprint(w, err.Error())
 		return
 	}
-	println("here")
 	client := NewClient(socket, r.FindHandler, r.session)
 	defer client.Close()
 	go client.Write()
