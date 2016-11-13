@@ -3,6 +3,7 @@ import ChannelSection from './channels/ChannelSection.jsx';
 import MessageSection from './messages/MessageSection.jsx';
 import UserSection from './users/UserSection.jsx';
 import Socket from '../../socket.js';
+import UUID from '../util/uuid.js';
 
 
 export default class App extends Component {
@@ -13,7 +14,7 @@ export default class App extends Component {
       activeChannel: {},
       messages: [],
       users: [],
-      activeUser: {},
+      activeUserID: "",
       connected: false,
     };
   }
@@ -27,8 +28,15 @@ export default class App extends Component {
     socket.on("user edit", this.onEditUser.bind(this));
     socket.on("user remove", this.onRemoveUser.bind(this));
     socket.on("message add", this.onMessageAdd.bind(this));
+    window.addEventListener("beforeunload", (ev) => {
+      socket.close();
+    });
   }
   onMessageAdd(message) {
+    console.log("message from server", message)
+    console.log("message.CreatedAt", message.createdAt)
+    var d = new Date(message.createdAt)
+    message.createdAt = d.getMonth() + " - " + d.getDay() + " - " + d.getFullYear() + " " + d.getHours() + ":" + d.getMinutes() + ":" + d.getSeconds()
     let { messages } = this.state;
     messages.push(message);
     this.setState({ messages });
@@ -48,7 +56,7 @@ export default class App extends Component {
   onEditUser(editUser) {
     let { users } = this.state;
     users = users.map(user => {
-      if (editUser.userID === user.userID) {
+      if (editUser.id === user.id) {
         return editUser;
       }
       return user;
@@ -58,9 +66,14 @@ export default class App extends Component {
   onConnect() {
     this.setState({ connected: true });
     this.socket.emit("user subscribe");
+    let activeUserID = UUID();
+    this.socket.emit("user add", { name: "Anonymous", id: activeUserID });
+    this.setState({ activeUserID });
     this.socket.emit("channel subscribe");
   }
   onDisconnect() {
+    this.socket.emit("log", "disconnected");
+    this.removeUserIfUnedited();
     this.setState({ connected: false });
   }
   onAddChannel(channel) {
@@ -76,28 +89,36 @@ export default class App extends Component {
     this.socket.emit("message unsubscribe");
     this.setState({ messages: [] });
     this.socket.emit("message subscribe", {
-      channelID: activeChannel.ID,
+      channelID: activeChannel.id,
     });
   }
-  setUserName(user) {
-    this.socket.emit("user edit", { user });
+  setUserName(userName) {
+    let { activeUserID } = this.state;
+    let user = {
+      name: userName,
+      id: activeUserID,
+    };
+    this.socket.emit("user edit", user);
+  }
+  removeUserIfUnedited() {
+    var users = this.state.users.filter(u => {
+      return u.id === this.state.activeUserID & u.name === "Anonymous";
+    });
+    if (users[0].name) {
+      this.socket.emit("user remove", { id: users[0].id });
+    }
   }
   addMessage(body) {
-    let { activeChannel } = this.state;
-    this.socket.emit("message add",
-      { channelID: activeChannel.id, body });
-  }
-  addUser(userName) {
-    let { users } = this.state;
-    var newUser = {
-      userID: users.length,
-      userName: userName,
-    };
-    users.push(newUser);
-    this.setState({ users });
-  }
-  setUser(activeUser) {
-    this.setState({ activeUser });
+    let { activeChannel, activeUserID } = this.state;
+    var users = this.state.users.filter(u => {
+      return u.id === this.state.activeUserID;
+    });
+    let channelMessage = {
+      channelID: activeChannel.id,
+      body: body,
+      author: users[0].name,
+    }
+    this.socket.emit("message add", channelMessage);
   }
   render() {
     const { activeChannel, messages } = this.state;
@@ -114,14 +135,12 @@ export default class App extends Component {
           />
           <UserSection
             { ...this.state }
-            addUser={ this.addUser.bind(this) }
-            setUser={ this.setUser.bind(this) }
+            setUserName={ this.setUserName.bind(this) }
           />
         </div>
         <div className="messages-container">
           <MessageSection
             { ...this.state }
-            activeMessages={ activeMessages }
             addMessage={ this.addMessage.bind(this) }
           />
         </div>

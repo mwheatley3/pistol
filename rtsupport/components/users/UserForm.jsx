@@ -2,14 +2,13 @@ import React, { Component } from 'react';
 
 export default class MessageForm extends Component {
   static propTypes = {
-    addUser: React.PropTypes.func.isRequired,
-    activeUser: React.PropTypes.object.isRequired,
+    setUserName: React.PropTypes.func.isRequired,
   }
   onSubmit(e) {
     e.preventDefault();
     const node = this.refs.user;
     const userName = node.value;
-    this.props.addUser(userName);
+    this.props.setUserName(userName);
     node.value = '';
   }
   render() {
@@ -18,7 +17,7 @@ export default class MessageForm extends Component {
         <div className="form-group">
           <input
             className="form-control"
-            placeholder="Tell Me Your Name"
+            placeholder="Set Your Name..."
             type="text"
             ref="user"
           />

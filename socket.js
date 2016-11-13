@@ -6,6 +6,7 @@ export default class Socket {
     this.ee = ee;
     ws.onmessage = this.message.bind(this);
     ws.onopen = this.open.bind(this);
+    ws.onerror = function() { alert("error"); };
     ws.onclose = this.close.bind(this);
   }
   on(name, fn) {
@@ -16,6 +17,7 @@ export default class Socket {
   }
   emit(name, data) {
     const message = JSON.stringify({ name, data });
+    console.log("message emitted to server: ", message)
     this.ws.send(message);
   }
   message(e) {

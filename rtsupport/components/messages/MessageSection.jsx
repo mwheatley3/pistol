@@ -5,7 +5,6 @@ import MessageForm from './MessageForm.jsx';
 export default class MessageSection extends Component {
   static propTypes = {
     activeChannel: React.PropTypes.object.isRequired,
-    activeMessages: React.PropTypes.array.isRequired,
   }
   render() {
     let { activeChannel } = this.props;

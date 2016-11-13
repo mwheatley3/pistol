@@ -5,9 +5,7 @@ import UserForm from './UserForm.jsx';
 export default class UserSection extends Component {
   static propTypes = {
     users: React.PropTypes.array.isRequired,
-    activeUser: React.PropTypes.object.isRequired,
-    addUser: React.PropTypes.func.isRequired,
-    setUser: React.PropTypes.func.isRequired,
+    setUserName: React.PropTypes.func.isRequired,
   }
   render() {
     return (
@@ -16,11 +14,10 @@ export default class UserSection extends Component {
           <strong>Users</strong>
         </div>
         <div className="panel-body users">
-          <UserList { ...this.props }/>
+          <UserList users={ this.props.users }/>
           <UserForm { ...this.props }/>
         </div>
       </div>
-
     );
   }
 }
